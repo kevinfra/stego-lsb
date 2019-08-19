@@ -65,17 +65,18 @@ if __name__ == '__main__':
                 new_b = int(bin_B[0:6] + text_length_and_admissible_bits_binary[header_from:header_to], 2)
                 header_from += 2
                 header_to += 2
-
-            new_r = int(bin_R[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
-            current_text_index_from += admissible_bits
-            current_text_index_to += admissible_bits
-            new_g = int(bin_G[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
-            current_text_index_from += admissible_bits
-            current_text_index_to += admissible_bits
-            new_b = int(bin_B[0:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
-            current_text_index_from += admissible_bits
-            current_text_index_to += admissible_bits
-            output_image.putpixel((i, j), (new_r, new_g, new_b))
+                output_image.putpixel((i, j), (new_r, new_g, new_b))
+            else:
+                new_r = int(bin_R[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
+                current_text_index_from += admissible_bits
+                current_text_index_to += admissible_bits
+                new_g = int(bin_G[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
+                current_text_index_from += admissible_bits
+                current_text_index_to += admissible_bits
+                new_b = int(bin_B[0:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
+                current_text_index_from += admissible_bits
+                current_text_index_to += admissible_bits
+                output_image.putpixel((i, j), (new_r, new_g, new_b))
 
     output_name = file_name.replace('.bmp', '-stego.bmp')
     output_image.save(output_name)
