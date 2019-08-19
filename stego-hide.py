@@ -41,8 +41,13 @@ if __name__ == '__main__':
     final_text_binary = text_to_hide_with_padding(text_to_hide, total_usable_bits, (2**admissible_bits)-1)
     output_image = Image.new('RGB', [width, height], 0)
 
-    current_text_index_from = 2
     bits_to_keep = 8 - admissible_bits
+    current_text_index_from = 2
+    current_text_index_to = current_text_index_from + admissible_bits
+
+    text_length_and_admissible_bits_binary = '{0:032b}'.format(len(text_to_hide)-2) + '{0:04b}'.format(admissible_bits)
+    header_from = 0
+    header_to = 2
     for i in range(width):
         for j in range(height):
             r, g, b = original_image.getpixel((i, j))
@@ -50,12 +55,21 @@ if __name__ == '__main__':
             bin_G = '{0:08b}'.format(g)
             bin_B = '{0:08b}'.format(b)
 
+            if i == 0 and j < 6:
+                new_r = int(bin_R[0:6] + text_length_and_admissible_bits_binary[header_from:header_to], 2)
+                header_from += 2
+                header_to += 2
+                new_g = int(bin_G[0:6] + text_length_and_admissible_bits_binary[header_from:header_to], 2)
+                header_from += 2
+                header_to += 2
+                new_b = int(bin_B[0:6] + text_length_and_admissible_bits_binary[header_from:header_to], 2)
+                header_from += 2
+                header_to += 2
 
-            current_text_index_to = current_text_index_from + admissible_bits
-            new_r = int(bin_R[0:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
+            new_r = int(bin_R[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
             current_text_index_from += admissible_bits
             current_text_index_to += admissible_bits
-            new_g = int(bin_G[0:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
+            new_g = int(bin_G[:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
             current_text_index_from += admissible_bits
             current_text_index_to += admissible_bits
             new_b = int(bin_B[0:bits_to_keep] + final_text_binary[current_text_index_from:current_text_index_to], 2)
