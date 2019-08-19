@@ -29,11 +29,11 @@ if __name__ == '__main__':
         print("image must be *.bmp")
         exit()
     input_text = str(input("text to hide"))
-    admissible_bits = int(input("admissable bits"))
+    admissible_bits = int(input("admissible bits"))
 
     text_to_hide = bin(int.from_bytes(input_text.encode(), 'big'))[2:]
-    if len(text_to_hide) % 2 == 1:
-        text_to_hide = '0' + text_to_hide[2:]
+    while len(text_to_hide) % 8 != 0:
+        text_to_hide = '0' + text_to_hide
 
     original_image = Image.open(file_name)
     width, height = original_image.size
