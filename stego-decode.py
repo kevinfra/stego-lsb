@@ -2,21 +2,14 @@ import os
 from PIL import Image
 
 
-if __name__ == '__main__':
-
-	image_path = input ("Enter path of image to decode \n")
-	if image_path.find('.bmp') == -1:
-		print("Image must be *.bmp")
-		exit()
-
-	input_image = Image.open(image_path)
+def find_hidden_message(input_image):
+	# to obtain header info, we set a standard of k = 2 bits	
+	int_k = ''
+	header = ''
+	text_size = '' #hidden message size in bits
+	hidden_message = ''
 	width, height = input_image.size
 
-	# para obtener los headers, se usa un standard de k = 2 bits	
-	header = ''
-	text_size = '' # tamaño del texto en bits
-	int_k = ''
-	text = ''
 
 	for i in range(width):
 		for j in range(height):
@@ -34,11 +27,33 @@ if __name__ == '__main__':
 					text_size = int(text_size + header[0:32], 2)
 					int_k = int(int_k + header[32:36], 2)
 			else:
-				#proceso el resto de la imagen
-				text = text + r_bits[-int_k:] + g_bits[-int_k:] + b_bits[-int_k:]
-				
+				#getting the hidden message
+				left_to_process = text_size - len(hidden_message)
+				info_in_pixel = r_bits[-int_k:] + g_bits[-int_k:] + b_bits[-int_k:]
 
-	hidden_message = int('0b'+text, 2)
+				if(left_to_process < int_k*3): #bits that are info in a pixel that is not full with info
+					hidden_message = hidden_message + info_in_pixel[:left_to_process]
+					return hidden_message
+
+				else:
+					hidden_message = hidden_message + info_in_pixel
+					
+	return hidden_message
+################################################################################				
+
+
+if __name__ == '__main__':
+
+	image_path = input ("Enter path of image to decode \n")
+	if image_path.find('.bmp') == -1:
+		print("Image must be *.bmp")
+		exit()
+
+	input_image = Image.open(image_path)
+
+	hidden_message = find_hidden_message(input_image)
+
+	hidden_message = int('0b' + hidden_message, 2)
 	hidden_message = hidden_message.to_bytes((hidden_message.bit_length() + 7) // 8, 'big').decode()
 	print("The hidden message is: '", hidden_message, "'")
 
