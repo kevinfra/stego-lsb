@@ -8,12 +8,17 @@ if __name__ == "__main__":
     img = input("Image to benchmark: ")
     text = input("Text to hide: ")
 
+    results = {
+        "image": img,
+        "hidden_text": text,
+    }
+
     shutil.copy(img, img.replace(".bmp", "-benchmark-original.bmp"))
 
     img = img.replace(".bmp", "-benchmark-original.bmp")
 
 
-    results = {}
+
     print("Beginning benchmark...")
     for i in range(2,9):
 
@@ -38,5 +43,5 @@ if __name__ == "__main__":
         }
         print(f"Took {after.total_seconds()} seconds..")
     out = json.dumps(results)
-    with open("benchmark.json", 'w') as f:
+    with open(f"benchmark-{results['image'].split('/')[-1].lower().split('.')[0]}.json", 'w') as f:
         f.write(out)
