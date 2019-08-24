@@ -27,14 +27,14 @@ def add_padding(text, usable_bits, k):
     return result
 
 
-if __name__ == '__main__':
+def hide(file_name: str, text_to_hide: str, lsb_bits: int):
 
-    file_name = str(input("file name"))
-    if file_name.find('.bmp') == -1:
-        print("image must be *.bmp")
-        exit()
-    text_to_hide = str(input("text to hide"))
-    k = int(input("number of least significant bits to use"))
+    #file_name = str(input("file name"))
+    #if file_name.find('.bmp') == -1:
+    #    print("image must be *.bmp")
+    #    exit()
+    #text_to_hide = str(input("text to hide"))
+    #k = int(input("number of least significant bits to use"))
 
     # text to binary with complete bytes
     text_to_hide = bin(int.from_bytes(text_to_hide.encode(), 'big'))[2:]
@@ -44,18 +44,18 @@ if __name__ == '__main__':
     # check if message can be hidden
     original_image = Image.open(file_name)
     width, height = original_image.size
-    total_usable_bits = width * height * 3 * k
-    if not valid_input(text_to_hide, total_usable_bits, k):
+    total_usable_bits = width * height * 3 * lsb_bits
+    if not valid_input(text_to_hide, total_usable_bits, lsb_bits):
         exit()
 
     # hide
-    final_text_binary = add_padding(text_to_hide, total_usable_bits, k)
+    final_text_binary = add_padding(text_to_hide, total_usable_bits, lsb_bits)
     output_image = Image.new('RGB', [width, height], 0)
 
-    bits_to_keep = 8 - k
+    bits_to_keep = 8 - lsb_bits
     text_index = 0
 
-    header = '{0:032b}'.format(len(text_to_hide)) + '{0:04b}'.format(k)
+    header = '{0:032b}'.format(len(text_to_hide)) + '{0:04b}'.format(lsb_bits)
     header_index = 0
     for i in range(width):
         for j in range(height):
@@ -73,12 +73,12 @@ if __name__ == '__main__':
                 header_index += 2
                 output_image.putpixel((i, j), (new_r, new_g, new_b))
             else:  # set hidden text
-                new_r = int(bin_R[:bits_to_keep] + final_text_binary[text_index:text_index + k], 2)
-                text_index += k
-                new_g = int(bin_G[:bits_to_keep] + final_text_binary[text_index:text_index + k], 2)
-                text_index += k
-                new_b = int(bin_B[:bits_to_keep] + final_text_binary[text_index:text_index + k], 2)
-                text_index += k
+                new_r = int(bin_R[:bits_to_keep] + final_text_binary[text_index:text_index + lsb_bits], 2)
+                text_index += lsb_bits
+                new_g = int(bin_G[:bits_to_keep] + final_text_binary[text_index:text_index + lsb_bits], 2)
+                text_index += lsb_bits
+                new_b = int(bin_B[:bits_to_keep] + final_text_binary[text_index:text_index + lsb_bits], 2)
+                text_index += lsb_bits
                 output_image.putpixel((i, j), (new_r, new_g, new_b))
 
     output_name = file_name.replace('.bmp', '-stego.bmp')

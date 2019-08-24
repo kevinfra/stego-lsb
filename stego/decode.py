@@ -1,4 +1,3 @@
-import os
 from PIL import Image
 
 
@@ -42,21 +41,12 @@ def find_hidden_message(input_image):
 ################################################################################				
 
 
-if __name__ == '__main__':
-
-	image_path = input ("Enter path of image to decode \n")
-	if image_path.find('.bmp') == -1:
-		print("Image must be *.bmp")
-		exit()
-
+def decode(image_path: str) -> str:
 	input_image = Image.open(image_path)
-
 	hidden_message = find_hidden_message(input_image)
 
 	hidden_message = int('0b' + hidden_message, 2)
 	hidden_message = hidden_message.to_bytes((hidden_message.bit_length() + 7) // 8, 'big').decode()
-	print("The hidden message is: '", hidden_message, "'")
+	return hidden_message
 
 
-
-	
