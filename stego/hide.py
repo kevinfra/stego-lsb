@@ -1,11 +1,12 @@
 from PIL import Image
 import random
+import math
 
 
 HEADERS_LENGTH = 4 + 32  # 4 bits for K and 32 bits for the length of the hidden message
 
 
-# binary_text is a string like '0b010101'
+# binary_text is a string like '010101'
 def valid_input(binary_text, usable_bits, k):
     if k < 2 or k > 8:
         print("LSB number is invalid. Should be between 2 and 8.")
@@ -44,9 +45,14 @@ def hide(file_name: str, text_to_hide: str, lsb_bits: int):
     # check if message can be hidden
     original_image = Image.open(file_name)
     width, height = original_image.size
-    total_usable_bits = width * height * 3 * lsb_bits
+    usable_channels = width * height * 3
+    total_usable_bits = usable_channels * lsb_bits
     if not valid_input(text_to_hide, total_usable_bits, lsb_bits):
-        exit()
+        print("changing lsb number")
+        lsb_bits = math.ceil((len(text_to_hide) + HEADERS_LENGTH) / usable_channels)
+        total_usable_bits = usable_channels * lsb_bits
+        if not valid_input(text_to_hide, total_usable_bits, lsb_bits):
+            exit()
 
     # hide
     final_text_binary = add_padding(text_to_hide, total_usable_bits, lsb_bits)
